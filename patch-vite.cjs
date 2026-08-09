@@ -1,17 +1,7 @@
-import tailwindcss from '@tailwindcss/vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
-import {defineConfig} from 'vite';
+const fs = require('fs');
+let code = fs.readFileSync('vite.config.ts', 'utf8');
 
-export default defineConfig(() => {
-  return {
-    plugins: [react(), tailwindcss()],
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, '.'),
-      },
-    },
-    server: {
+const replacement = `  server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       hmr: process.env.DISABLE_HMR !== 'true',
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
@@ -29,4 +19,7 @@ export default defineConfig(() => {
       }
     }
   };
-});
+});`;
+
+code = code.replace(/  server: \{[\s\S]*?  \};\n\}\);/, replacement);
+fs.writeFileSync('vite.config.ts', code);
