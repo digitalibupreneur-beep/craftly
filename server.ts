@@ -1,21 +1,22 @@
 import express from "express";
 import path from "path";
-import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
-
-const apiKey = process.env.GEMINI_API_KEY;
-const ai = new GoogleGenAI({
-  apiKey: apiKey,
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build',
-    }
-  }
-});
 
 async function startServer() {
   
-async function generateContentWithRetry(ai, params, maxRetries = 3) {
+async function generateContentWithRetry(params, maxRetries = 3) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('401: Kunci API Gemini tidak valid atau belum diatur. Silakan masukkan Gemini API Key di environment variables.');
+  }
+  const ai = new GoogleGenAI({
+    apiKey: apiKey,
+    httpOptions: {
+      headers: {
+        'User-Agent': 'aistudio-build',
+      }
+    }
+  });
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await ai.models.generateContent(params);
@@ -101,7 +102,7 @@ CRITICAL RULES for the generated text prompt:
 11. Do not include conversational text like "Here is your prompt:". Just output the prompt directly.
 `;
 
-      const response = await generateContentWithRetry(ai, {
+      const response = await generateContentWithRetry({
         model: "gemini-3.1-flash-lite",
         contents: prompt,
       });
@@ -192,7 +193,7 @@ Requirements:
 `;
       }
 
-      const response = await generateContentWithRetry(ai, {
+      const response = await generateContentWithRetry({
         model: "gemini-3.1-flash-lite",
         contents: promptText,
       });
@@ -287,7 +288,7 @@ Requirements for the generated prompt:
 - Do not include conversational text like "Here is your prompt:". Just output the prompt directly.${realisticInstruction}${languageInstruction}
 `;
 
-      const response = await generateContentWithRetry(ai, {
+      const response = await generateContentWithRetry({
         model: "gemini-3.1-flash-lite",
         contents: promptText,
       });
@@ -390,7 +391,7 @@ Image Prompt
 - Make each image prompt highly descriptive.${coverInstruction}${authorInstruction}${languageInstruction}
 `;
 
-      const response = await generateContentWithRetry(ai, {
+      const response = await generateContentWithRetry({
         model: "gemini-3.1-flash-lite",
         contents: promptText,
       });
@@ -523,7 +524,7 @@ Image Prompt
 - English only for the image prompt text itself.
 - Make each image prompt highly descriptive.`;
 
-      const response = await generateContentWithRetry(ai, {
+      const response = await generateContentWithRetry({
         model: "gemini-3.1-flash-lite",
         contents: prompt,
         config: {
@@ -691,7 +692,7 @@ Image Prompt
 - English only for the image prompt text itself.
 - Make each image prompt highly descriptive.`;
 
-      const response = await generateContentWithRetry(ai, {
+      const response = await generateContentWithRetry({
         model: "gemini-3.1-flash-lite",
         contents: prompt,
         config: {
@@ -809,7 +810,7 @@ Example Format for a Page Prompt:
 "Complete Islamic prayer book page design. Book Title: [Title]. Prayer Title: [Prayer Title]. Arabic Text: [Actual Arabic Text]. Latin: [Transliteration]. Translation: [Meaning]. Typography: Beautiful Arabic calligraphy, clear readable sans-serif for Latin/Translation. Layout: Professional, balanced, [Style] style. Illustration: [Describe matching illustration]. Colors: [Dominant Color]. Aspect ratio: [Size]."
 `;
 
-      const response = await generateContentWithRetry(ai, {
+      const response = await generateContentWithRetry({
         model: "gemini-3.1-flash-lite",
         contents: prompt,
         config: {
@@ -1323,7 +1324,7 @@ Example Format for the Prompt:
 "Professional invitation card design for [Event Type]. Elegant layout featuring [Decorative Elements] and [Illustration]. Color palette centered around [Dominant Color]. Text to include: Title '[Event Title]', Names '[Host/Names]', Content '[Invitation Content]', Details '[Event Details]'. Beautiful typography, premium design, balanced spacing, readable text, high resolution, print ready, elegant background, luxury style. Aspect ratio: [Size]."
 `;
 
-      const response = await generateContentWithRetry(ai, {
+      const response = await generateContentWithRetry({
         model: "gemini-3.1-flash-lite",
         contents: prompt,
         config: {
@@ -1340,23 +1341,37 @@ Example Format for the Prompt:
     }
   });
 
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+  if (!process.env.VERCEL) {
+    if (process.env.NODE_ENV !== "production") {
+      const { createServer: createViteServer } = await import("vite");
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: "spa",
+      });
+      app.use(vite.middlewares);
+    } else {
+      const distPath = path.join(process.cwd(), 'dist');
+      app.use(express.static(distPath));
+      app.get('*', (req, res) => {
+        res.sendFile(path.join(distPath, 'index.html'));
+      });
+    }
+
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on http://localhost:${PORT}`);
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
+  return app;
 }
 
-startServer();
+const appPromise = startServer();
+
+if (!process.env.VERCEL) {
+  appPromise.catch(console.error);
+}
+
+export default async function (req, res) {
+  const app = await appPromise;
+  app(req, res);
+}
