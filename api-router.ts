@@ -125,13 +125,13 @@ CRITICAL RULES for the generated text prompt:
       } = req.body;
 
 
-      const facelessInstruction = gayaIlustrasi.includes('Faceless') ? 
+      const facelessInstruction = (typeof gayaIlustrasi === 'string' && gayaIlustrasi.includes('Faceless')) ? 
         "\n- CRITICAL FOR FACELESS STYLE: The prompt MUST explicitly instruct generating a faceless Muslim character (no eyes, nose, or mouth). Expressions must be conveyed through body posture and gestures. Characters should wear modest clothing following Islamic values. Avoid elements contrary to Islamic values. Keep the style cute, child-friendly, and consistent." : "";
 
       let languageInstruction = `\n- The text/language used inside the generated image design MUST BE in ${bahasa}. All titles, instructions, labels, and questions must use this language consistently.`;
-      if (bahasa.includes('Arab')) {
+      if (typeof bahasa === 'string' && bahasa.includes('Arab')) {
         languageInstruction += " Ensure correct Right-to-Left (RTL) Arabic script layout.";
-      } else if (bahasa.includes('Jepang')) {
+      } else if (typeof bahasa === 'string' && bahasa.includes('Jepang')) {
         languageInstruction += " Use appropriate Japanese characters (Hiragana/Katakana/Kanji) suitable for the content.";
       }
 
@@ -157,7 +157,7 @@ Requirements for the generated prompt:
 - Do not include conversational text like "Here is your prompt:". Just output the prompt directly.${languageInstruction}
 `;
       } else {
-        const pages = parseInt(jumlahHalaman.charAt(0));
+        const pages = (typeof jumlahHalaman === 'string' ? parseInt(jumlahHalaman.replace(/[^0-9]/g, '')) || 1 : (typeof jumlahHalaman === 'number' ? jumlahHalaman : 1));
         const actualAktivitas = jenisAktivitas === 'Custom' ? customAktivitas : jenisAktivitas;
         const materiString = Array.isArray(isiMateri) ? isiMateri.map((m, i) => `Page ${i + 1}: ${m}`).join(' | ') : isiMateri;
         
@@ -236,7 +236,7 @@ Requirements:
       const actualWarna = warnaDominan === 'Custom' ? customWarna : warnaDominan;
       
       let facelessInstruction = "";
-      if (gayaIlustrasi.includes('Faceless')) {
+      if (typeof gayaIlustrasi === 'string' && gayaIlustrasi.includes('Faceless')) {
         facelessInstruction = "\n- CRITICAL FOR FACELESS STYLE: The prompt MUST explicitly instruct generating a faceless Muslim character (no eyes, nose, or mouth). Expressions must be conveyed through body posture and gestures. Characters should wear modest clothing following Islamic values. Avoid elements contrary to Islamic values. Keep the style modern, professional, and consistent.";
       }
       
@@ -246,9 +246,9 @@ Requirements:
       }
 
       let languageInstruction = `\n- The text/language used inside the generated infographic MUST BE in ${bahasa}. All titles, labels, and content must use this language consistently.`;
-      if (bahasa.includes('Arab')) {
+      if (typeof bahasa === 'string' && bahasa.includes('Arab')) {
         languageInstruction += " Ensure correct Right-to-Left (RTL) Arabic script layout.";
-      } else if (bahasa.includes('Jepang')) {
+      } else if (typeof bahasa === 'string' && bahasa.includes('Jepang')) {
         languageInstruction += " Use appropriate Japanese characters (Hiragana/Katakana/Kanji) suitable for the content.";
       }
       
@@ -315,7 +315,7 @@ Requirements for the generated prompt:
 
 
       const actualTema = temaCerita === 'Custom' ? customTema : temaCerita;
-      const actualHalaman = jumlahHalaman === 'Custom' ? parseInt(customJumlahHalaman) : parseInt(jumlahHalaman.charAt(0));
+      const actualHalaman = jumlahHalaman === 'Custom' ? parseInt(customJumlahHalaman) : (typeof jumlahHalaman === 'string' ? parseInt(jumlahHalaman.replace(/[^0-9]/g, '')) || 1 : (typeof jumlahHalaman === 'number' ? jumlahHalaman : 1));
       const pagesCount = isNaN(actualHalaman) || actualHalaman < 1 ? 1 : actualHalaman;
       
       let facelessInstruction = "";
@@ -324,9 +324,9 @@ Requirements for the generated prompt:
       }
       
       let languageInstruction = `\n- The text/language used inside the generated illustration (e.g. for book title or page text spaces) MUST BE in ${bahasa}. All titles and labels must use this language.`;
-      if (bahasa.includes('Arab')) {
+      if (typeof bahasa === 'string' && bahasa.includes('Arab')) {
         languageInstruction += " Ensure correct Right-to-Left (RTL) Arabic script layout.";
-      } else if (bahasa.includes('Jepang')) {
+      } else if (typeof bahasa === 'string' && bahasa.includes('Jepang')) {
         languageInstruction += " Use appropriate Japanese characters (Hiragana/Katakana/Kanji).";
       }
 
@@ -454,15 +454,15 @@ Image Prompt
       const actualWarnaDominan = warnaDominan === "Custom" ? (customWarnaDominan || "Custom") : warnaDominan;
 
       let extraStyleInstructions = "";
-      if (gayaFoto.includes("Photography") || gayaFoto.includes("Restaurant") || gayaFoto.includes("Cafe")) {
+      if (typeof gayaFoto === 'string' && gayaFoto.includes("Photography") || gayaFoto.includes("Restaurant") || gayaFoto.includes("Cafe")) {
         extraStyleInstructions = "- Ensure the image prompt requests realistic food photography with professional lighting, clear food textures, attractive plating, and professional culinary photography quality.";
       } else if (gayaFoto === "Children's Cookbook Illustration") {
         extraStyleInstructions = "- Ensure the image prompt requests illustrations that are cheerful, colorful, child-friendly, and easily recognizable.";
-      } else if (gayaFoto.includes("Illustration") || gayaFoto.includes("Drawn") || gayaFoto.includes("Sketch")) {
+      } else if (typeof gayaFoto === 'string' && gayaFoto.includes("Illustration") || gayaFoto.includes("Drawn") || gayaFoto.includes("Sketch")) {
         extraStyleInstructions = "- Ensure the image prompt requests an illustration in the chosen style, maintaining accurate and attractive food shapes.";
       }
       
-      if (gayaFoto.includes("Islamic") || gayaFoto.includes("Halal")) {
+      if (typeof gayaFoto === 'string' && gayaFoto.includes("Islamic") || gayaFoto.includes("Halal")) {
         extraStyleInstructions += "\n- Ensure the image prompt requests an elegant Islamic atmosphere, warm colors, tasteful Islamic ornaments, and only depicts Halal food.";
       }
 
@@ -609,7 +609,7 @@ Image Prompt
       }
 
       let extraStyleInstruction = "";
-      if (actualGayaKomik.toLowerCase().includes("islami")) {
+      if (typeof actualGayaKomik === 'string' && actualGayaKomik.toLowerCase().includes("islami")) {
         extraStyleInstruction = `
 - ISLAMIC STYLE REQUIREMENTS:
   - Maintain Islamic etiquette (adab).
@@ -618,7 +618,7 @@ Image Prompt
   - No inappropriate or sinful elements (maksiat).
   - Polite dialogue and positive Islamic moral values.
   - Elegant, warm Islamic atmosphere.`;
-      } else if (actualGayaKomik.toLowerCase().includes("horor")) {
+      } else if (typeof actualGayaKomik === 'string' && actualGayaKomik.toLowerCase().includes("horor")) {
         extraStyleInstruction = `
 - HORROR STYLE REQUIREMENTS:
   - Create a tense, suspenseful atmosphere.
@@ -893,49 +893,49 @@ Example Format for a Page Prompt:
       let tutupBawah = "";
       let totalUnfolded = "";
 
-      if (finalUkuranAmplop.includes("7 × 9") || finalUkuranAmplop === "7 × 9 cm") {
+      if (typeof finalUkuranAmplop === 'string' && finalUkuranAmplop.includes("7 × 9") || finalUkuranAmplop === "7 × 9 cm") {
         tinggi = "9 cm";
         lebarDepan = "7 cm";
         glueArea = "0.8 cm";
         tutupAtas = "2 cm";
         tutupBawah = "1 cm";
         totalUnfolded = "10.6 × 12 cm";
-      } else if (finalUkuranAmplop.includes("8 × 12") || finalUkuranAmplop === "8 × 12 cm") {
+      } else if (typeof finalUkuranAmplop === 'string' && finalUkuranAmplop.includes("8 × 12") || finalUkuranAmplop === "8 × 12 cm") {
         tinggi = "12 cm";
         lebarDepan = "8 cm";
         glueArea = "1 cm";
         tutupAtas = "2.5 cm";
         tutupBawah = "1 cm";
         totalUnfolded = "11 × 15.5 cm";
-      } else if (finalUkuranAmplop.includes("8.5 × 16") || finalUkuranAmplop === "8.5 × 16 cm" || finalUkuranAmplop.includes("8.5 x 16") || finalUkuranAmplop.includes("8 × 16")) {
+      } else if (typeof finalUkuranAmplop === 'string' && finalUkuranAmplop.includes("8.5 × 16") || finalUkuranAmplop === "8.5 × 16 cm" || finalUkuranAmplop.includes("8.5 x 16") || finalUkuranAmplop.includes("8 × 16")) {
         tinggi = "16 cm";
         lebarDepan = "8.5 cm";
         glueArea = "1.5 cm";
         tutupAtas = "3 cm";
         tutupBawah = "1.5 cm";
         totalUnfolded = "18.5 × 20.5 cm";
-      } else if (finalUkuranAmplop.includes("110 × 220") || finalUkuranAmplop === "11 × 22 cm" || finalUkuranAmplop.includes("11 x 22") || finalUkuranAmplop.includes("110 x 220")) {
+      } else if (typeof finalUkuranAmplop === 'string' && finalUkuranAmplop.includes("110 × 220") || finalUkuranAmplop === "11 × 22 cm" || finalUkuranAmplop.includes("11 x 22") || finalUkuranAmplop.includes("110 x 220")) {
         tinggi = "22 cm";
         lebarDepan = "11 cm";
         glueArea = "1.5 cm";
         tutupAtas = "4 cm";
         tutupBawah = "2 cm";
         totalUnfolded = "16 × 28 cm";
-      } else if (finalUkuranAmplop.includes("130 × 230") || finalUkuranAmplop === "13 × 23 cm" || finalUkuranAmplop.includes("13 x 23") || finalUkuranAmplop.includes("130 x 230")) {
+      } else if (typeof finalUkuranAmplop === 'string' && finalUkuranAmplop.includes("130 × 230") || finalUkuranAmplop === "13 × 23 cm" || finalUkuranAmplop.includes("13 x 23") || finalUkuranAmplop.includes("130 x 230")) {
         tinggi = "23 cm";
         lebarDepan = "13 cm";
         glueArea = "1.5 cm";
         tutupAtas = "4 cm";
         tutupBawah = "2 cm";
         totalUnfolded = "18 × 29 cm";
-      } else if (finalUkuranAmplop.includes("150 × 250") || finalUkuranAmplop === "15 × 25 cm" || finalUkuranAmplop.includes("15 x 25") || finalUkuranAmplop.includes("150 x 250")) {
+      } else if (typeof finalUkuranAmplop === 'string' && finalUkuranAmplop.includes("150 × 250") || finalUkuranAmplop === "15 × 25 cm" || finalUkuranAmplop.includes("15 x 25") || finalUkuranAmplop.includes("150 x 250")) {
         tinggi = "25 cm";
         lebarDepan = "15 cm";
         glueArea = "1.5 cm";
         tutupAtas = "4.5 cm";
         tutupBawah = "2 cm";
         totalUnfolded = "20 × 31.5 cm";
-      } else if (finalUkuranAmplop.includes("170 × 260") || finalUkuranAmplop === "17 × 26 cm" || finalUkuranAmplop.includes("17 x 26") || finalUkuranAmplop.includes("170 x 260")) {
+      } else if (typeof finalUkuranAmplop === 'string' && finalUkuranAmplop.includes("170 × 260") || finalUkuranAmplop === "17 × 26 cm" || finalUkuranAmplop.includes("17 x 26") || finalUkuranAmplop.includes("170 x 260")) {
         tinggi = "26 cm";
         lebarDepan = "17 cm";
         glueArea = "2 cm";
