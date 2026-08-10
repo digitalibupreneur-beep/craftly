@@ -3,8 +3,8 @@ import { GoogleGenAI } from "@google/genai";
 
 async function generateContentWithRetry(params, maxRetries = 3) {
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error('401: Kunci API Gemini tidak valid atau belum diatur. Silakan masukkan Gemini API Key di environment variables.');
+  if (!apiKey || apiKey.trim() === '') {
+    throw new Error('MISSING_API_KEY');
   }
   const ai = new GoogleGenAI({
     apiKey: apiKey,
@@ -101,7 +101,15 @@ CRITICAL RULES for the generated text prompt:
       res.json({ prompt: response.text });
     } catch (error) {
       console.error("Error generating prompt:", error);
-      if (error.status === 401 || (error.message && error.message.includes('401'))) { return res.status(401).json({ error: 'Kunci API Gemini tidak valid atau belum diatur. Silakan masukkan Gemini API Key yang benar melalui menu Pengaturan (ikon gir di pojok).' }); } if (error.status === 503 || (error.message && error.message.includes('503'))) { return res.status(503).json({ error: 'Server AI sedang sibuk (kapasitas penuh). Silakan coba lagi dalam beberapa saat.' }); }
+      if (error.message === 'MISSING_API_KEY') {
+        return res.status(401).json({ error: 'Kunci API Gemini tidak tersedia. Silakan masukkan variabel GEMINI_API_KEY di Environment Variables Vercel.' });
+      }
+      if (error.status === 401 || error.status === 403 || (error.message && (error.message.includes('401') || error.message.includes('403') || error.message.includes('API_KEY_INVALID')))) {
+        return res.status(401).json({ error: 'Kunci API Gemini tidak valid. Pastikan GEMINI_API_KEY yang dimasukkan benar.' });
+      }
+      if (error.status === 503 || (error.message && error.message.includes('503'))) {
+        return res.status(503).json({ error: 'Server AI sedang sibuk (kapasitas penuh). Silakan coba lagi dalam beberapa saat.' });
+      }
       res.status(500).json({ error: 'Failed to generate prompt. ' + (error.message || '') });
     }
   });
@@ -207,7 +215,15 @@ Requirements:
       res.json({ prompts: results });
     } catch (error) {
       console.error("Error generating prompt:", error);
-      if (error.status === 401 || (error.message && error.message.includes('401'))) { return res.status(401).json({ error: 'Kunci API Gemini tidak valid atau belum diatur. Silakan masukkan Gemini API Key yang benar melalui menu Pengaturan (ikon gir di pojok).' }); } if (error.status === 503 || (error.message && error.message.includes('503'))) { return res.status(503).json({ error: 'Server AI sedang sibuk (kapasitas penuh). Silakan coba lagi dalam beberapa saat.' }); }
+      if (error.message === 'MISSING_API_KEY') {
+        return res.status(401).json({ error: 'Kunci API Gemini tidak tersedia. Silakan masukkan variabel GEMINI_API_KEY di Environment Variables Vercel.' });
+      }
+      if (error.status === 401 || error.status === 403 || (error.message && (error.message.includes('401') || error.message.includes('403') || error.message.includes('API_KEY_INVALID')))) {
+        return res.status(401).json({ error: 'Kunci API Gemini tidak valid. Pastikan GEMINI_API_KEY yang dimasukkan benar.' });
+      }
+      if (error.status === 503 || (error.message && error.message.includes('503'))) {
+        return res.status(503).json({ error: 'Server AI sedang sibuk (kapasitas penuh). Silakan coba lagi dalam beberapa saat.' });
+      }
       res.status(500).json({ error: 'Failed to generate prompt. ' + (error.message || '') });
     }
   });
@@ -287,7 +303,15 @@ Requirements for the generated prompt:
       res.json({ prompt: response.text?.trim() || "" });
     } catch (error) {
       console.error("Error generating prompt:", error);
-      if (error.status === 401 || (error.message && error.message.includes('401'))) { return res.status(401).json({ error: 'Kunci API Gemini tidak valid atau belum diatur. Silakan masukkan Gemini API Key yang benar melalui menu Pengaturan (ikon gir di pojok).' }); } if (error.status === 503 || (error.message && error.message.includes('503'))) { return res.status(503).json({ error: 'Server AI sedang sibuk (kapasitas penuh). Silakan coba lagi dalam beberapa saat.' }); }
+      if (error.message === 'MISSING_API_KEY') {
+        return res.status(401).json({ error: 'Kunci API Gemini tidak tersedia. Silakan masukkan variabel GEMINI_API_KEY di Environment Variables Vercel.' });
+      }
+      if (error.status === 401 || error.status === 403 || (error.message && (error.message.includes('401') || error.message.includes('403') || error.message.includes('API_KEY_INVALID')))) {
+        return res.status(401).json({ error: 'Kunci API Gemini tidak valid. Pastikan GEMINI_API_KEY yang dimasukkan benar.' });
+      }
+      if (error.status === 503 || (error.message && error.message.includes('503'))) {
+        return res.status(503).json({ error: 'Server AI sedang sibuk (kapasitas penuh). Silakan coba lagi dalam beberapa saat.' });
+      }
       res.status(500).json({ error: 'Failed to generate prompt. ' + (error.message || '') });
     }
   });
@@ -401,7 +425,15 @@ Image Prompt
       res.json({ prompts: results });
     } catch (error) {
       console.error("Error generating prompt:", error);
-      if (error.status === 401 || (error.message && error.message.includes('401'))) { return res.status(401).json({ error: 'Kunci API Gemini tidak valid atau belum diatur. Silakan masukkan Gemini API Key yang benar melalui menu Pengaturan (ikon gir di pojok).' }); } if (error.status === 503 || (error.message && error.message.includes('503'))) { return res.status(503).json({ error: 'Server AI sedang sibuk (kapasitas penuh). Silakan coba lagi dalam beberapa saat.' }); }
+      if (error.message === 'MISSING_API_KEY') {
+        return res.status(401).json({ error: 'Kunci API Gemini tidak tersedia. Silakan masukkan variabel GEMINI_API_KEY di Environment Variables Vercel.' });
+      }
+      if (error.status === 401 || error.status === 403 || (error.message && (error.message.includes('401') || error.message.includes('403') || error.message.includes('API_KEY_INVALID')))) {
+        return res.status(401).json({ error: 'Kunci API Gemini tidak valid. Pastikan GEMINI_API_KEY yang dimasukkan benar.' });
+      }
+      if (error.status === 503 || (error.message && error.message.includes('503'))) {
+        return res.status(503).json({ error: 'Server AI sedang sibuk (kapasitas penuh). Silakan coba lagi dalam beberapa saat.' });
+      }
       res.status(500).json({ error: 'Failed to generate prompt. ' + (error.message || '') });
     }
   });
@@ -555,7 +587,15 @@ Image Prompt
 
     } catch (error) {
       console.error("Error generating cookbook prompts:", error);
-      if (error.status === 401 || (error.message && error.message.includes('401'))) { return res.status(401).json({ error: 'Kunci API Gemini tidak valid atau belum diatur. Silakan masukkan Gemini API Key yang benar melalui menu Pengaturan (ikon gir di pojok).' }); } if (error.status === 503 || (error.message && error.message.includes('503'))) { return res.status(503).json({ error: 'Server AI sedang sibuk (kapasitas penuh). Silakan coba lagi dalam beberapa saat.' }); }
+      if (error.message === 'MISSING_API_KEY') {
+        return res.status(401).json({ error: 'Kunci API Gemini tidak tersedia. Silakan masukkan variabel GEMINI_API_KEY di Environment Variables Vercel.' });
+      }
+      if (error.status === 401 || error.status === 403 || (error.message && (error.message.includes('401') || error.message.includes('403') || error.message.includes('API_KEY_INVALID')))) {
+        return res.status(401).json({ error: 'Kunci API Gemini tidak valid. Pastikan GEMINI_API_KEY yang dimasukkan benar.' });
+      }
+      if (error.status === 503 || (error.message && error.message.includes('503'))) {
+        return res.status(503).json({ error: 'Server AI sedang sibuk (kapasitas penuh). Silakan coba lagi dalam beberapa saat.' });
+      }
       res.status(500).json({ error: 'Failed to generate prompts. ' + (error.message || '') });
     }
   });
@@ -717,7 +757,15 @@ Image Prompt
 
     } catch (error) {
       console.error("Error generating comic prompts:", error);
-      if (error.status === 401 || (error.message && error.message.includes('401'))) { return res.status(401).json({ error: 'Kunci API Gemini tidak valid atau belum diatur. Silakan masukkan Gemini API Key yang benar melalui menu Pengaturan (ikon gir di pojok).' }); } if (error.status === 503 || (error.message && error.message.includes('503'))) { return res.status(503).json({ error: 'Server AI sedang sibuk (kapasitas penuh). Silakan coba lagi dalam beberapa saat.' }); }
+      if (error.message === 'MISSING_API_KEY') {
+        return res.status(401).json({ error: 'Kunci API Gemini tidak tersedia. Silakan masukkan variabel GEMINI_API_KEY di Environment Variables Vercel.' });
+      }
+      if (error.status === 401 || error.status === 403 || (error.message && (error.message.includes('401') || error.message.includes('403') || error.message.includes('API_KEY_INVALID')))) {
+        return res.status(401).json({ error: 'Kunci API Gemini tidak valid. Pastikan GEMINI_API_KEY yang dimasukkan benar.' });
+      }
+      if (error.status === 503 || (error.message && error.message.includes('503'))) {
+        return res.status(503).json({ error: 'Server AI sedang sibuk (kapasitas penuh). Silakan coba lagi dalam beberapa saat.' });
+      }
       res.status(500).json({ error: 'Failed to generate prompts. ' + (error.message || '') });
     }
   });
@@ -842,7 +890,15 @@ Example Format for a Page Prompt:
 
     } catch (error) {
       console.error("Error generating buku doa prompts:", error);
-      if (error.status === 401 || (error.message && error.message.includes('401'))) { return res.status(401).json({ error: 'Kunci API Gemini tidak valid atau belum diatur. Silakan masukkan Gemini API Key yang benar melalui menu Pengaturan (ikon gir di pojok).' }); } if (error.status === 503 || (error.message && error.message.includes('503'))) { return res.status(503).json({ error: 'Server AI sedang sibuk (kapasitas penuh). Silakan coba lagi dalam beberapa saat.' }); }
+      if (error.message === 'MISSING_API_KEY') {
+        return res.status(401).json({ error: 'Kunci API Gemini tidak tersedia. Silakan masukkan variabel GEMINI_API_KEY di Environment Variables Vercel.' });
+      }
+      if (error.status === 401 || error.status === 403 || (error.message && (error.message.includes('401') || error.message.includes('403') || error.message.includes('API_KEY_INVALID')))) {
+        return res.status(401).json({ error: 'Kunci API Gemini tidak valid. Pastikan GEMINI_API_KEY yang dimasukkan benar.' });
+      }
+      if (error.status === 503 || (error.message && error.message.includes('503'))) {
+        return res.status(503).json({ error: 'Server AI sedang sibuk (kapasitas penuh). Silakan coba lagi dalam beberapa saat.' });
+      }
       res.status(500).json({ error: 'Failed to generate prompts. ' + (error.message || '') });
     }
   });
@@ -1327,7 +1383,15 @@ Example Format for the Prompt:
 
     } catch (error) {
       console.error("Error generating kartu undangan prompt:", error);
-      if (error.status === 401 || (error.message && error.message.includes('401'))) { return res.status(401).json({ error: 'Kunci API Gemini tidak valid atau belum diatur. Silakan masukkan Gemini API Key yang benar melalui menu Pengaturan (ikon gir di pojok).' }); } if (error.status === 503 || (error.message && error.message.includes('503'))) { return res.status(503).json({ error: 'Server AI sedang sibuk (kapasitas penuh). Silakan coba lagi dalam beberapa saat.' }); }
+      if (error.message === 'MISSING_API_KEY') {
+        return res.status(401).json({ error: 'Kunci API Gemini tidak tersedia. Silakan masukkan variabel GEMINI_API_KEY di Environment Variables Vercel.' });
+      }
+      if (error.status === 401 || error.status === 403 || (error.message && (error.message.includes('401') || error.message.includes('403') || error.message.includes('API_KEY_INVALID')))) {
+        return res.status(401).json({ error: 'Kunci API Gemini tidak valid. Pastikan GEMINI_API_KEY yang dimasukkan benar.' });
+      }
+      if (error.status === 503 || (error.message && error.message.includes('503'))) {
+        return res.status(503).json({ error: 'Server AI sedang sibuk (kapasitas penuh). Silakan coba lagi dalam beberapa saat.' });
+      }
       res.status(500).json({ error: 'Failed to generate prompt. ' + (error.message || '') });
     }
   });
