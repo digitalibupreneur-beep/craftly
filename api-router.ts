@@ -1228,7 +1228,7 @@ NO incorrect proportions
 The generated dieline MUST strictly follow the selected envelope size while preserving the exact engineering proportions.`;
 
       res.json({ prompt: outputPrompt });
-    } catch (error) {error("Error generating amplop prompt:", error);
+    } catch (error) {console.error("Error generating amplop prompt:", error);
       res.status(500).json({ error: 'Failed to generate prompt. ' + (error.message || '') });
     }
   });
